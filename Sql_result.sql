@@ -68,20 +68,20 @@ values
 select sum(TR1.amount*ISNULL(A.highest_rate,1)) as Total_sum_GBP,
        user_id 
 	   from
-			(select  ER1.rate as highest_rate,
-					 ER1.from_currency 
+		(select  ER1.rate as highest_rate,
+			 ER1.from_currency 
 				from 
-					 exchange_rates ER1
+			        exchange_rates ER1
 				where ER1.to_currency='GBP'
 				and ER1.ts in (select max(ER2.ts) 
-									from 
-										exchange_rates ER2
-									where ER2.to_currency='GBP'
-									group by 
-										    ER2.from_currency)) as A
+								from 
+								exchange_rates ER2
+								where ER2.to_currency='GBP'
+								group by 
+					                        ER2.from_currency)) as A
 right join transactions TR1 on TR1.currency=A.from_currency
 	group by 
-			TR1.user_id
+		TR1.user_id
 	order by
 	        TR1.user_id
 
@@ -93,8 +93,8 @@ right join transactions TR1 on TR1.currency=A.from_currency
 
 select A.user_id,sum(A.[GBP SPEND]) as 'Tot sum in GBP' from
 (select  TR1.user_id,(ISNULL((select top 1 ER1.rate 
-							from 
-								exchange_rates ER1
+						from 
+						exchange_rates ER1
 						where TR1.ts >=  ER1.ts
 						and TR1.currency=ER1.from_currency
 						order by ts desc),1))*TR1.amount as [GBP SPEND]
